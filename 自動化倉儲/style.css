@@ -72,6 +72,26 @@ body {
     border-radius: 2px;
 }
 
+.slot {
+    /* 你原本的寬高、背景顏色等設定... */
+    
+    /* 讓數字置中的魔法 */
+    display: flex;
+    align-items: center;     /* 垂直置中 */
+    justify-content: center; /* 水平置中 */
+    
+    /* 文字美化 */
+    font-size: 10px;         /* 120格較擠，建議字小一點 */
+    font-weight: bold;
+    color: #666;             /* 數字顏色 */
+}
+
+/* 如果點亮後想讓文字變白色，可以加這個 */
+.slot.occupied {
+    background: #e74c3c; 
+    color: white; 
+}
+
 .slot.occupied {
     background: var(--success); /* 有貨：綠色，代表入庫成功 */
     /* 或者用你原本的 #e74c3c 紅色代表警告不可再放 */

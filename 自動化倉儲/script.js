@@ -18,17 +18,21 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('available-slots').innerText = `${available} (${usagePercent}%)`;
     }
 
-    // 3. 生成 120 個貨架格子
-    function generateShelf() {
-        shelf.innerHTML = ''; 
-        for (let i = 1; i <= totalSlots; i++) {
-            const slot = document.createElement('div');
-            slot.classList.add('slot');
-            slot.setAttribute('data-id', i); // 給每一格一個身分證字號
-            slot.title = `貨位 ${i}: 空白`;
-            shelf.appendChild(slot);
-        }
+// 3. 生成 120 個貨架格子
+function generateShelf() {
+    shelf.innerHTML = ''; 
+    for (let i = 1; i <= totalSlots; i++) {
+        const slot = document.createElement('div');
+        slot.classList.add('slot');
+        slot.setAttribute('data-id', i);
+        
+        // --- 加上下面這一行就可以了 ---
+        slot.innerText = i; 
+        
+        slot.title = `貨位 ${i}: 空白`;
+        shelf.appendChild(slot);
     }
+}
 
     // 4. 精準點亮邏輯 (核心功能)
     function processInbound(slotNumber) {
