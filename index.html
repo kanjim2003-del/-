@@ -3,22 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>自動化倉儲管理</title>
     <link rel="stylesheet" href="style.css">
        <script src="https://unpkg.com/html5-qrcode"></script>
-    <script src="https://unpkg.com/html5-qrcode"></script>
-    <script src="https://unpkg.com/html5-qrcode"></script>
 </head>
 <body>
     <header>
-        <h1>自動化倉儲監控</h1>
-        <nav>
-            <ul>
-                <li><a href="#">首頁</a></li>
-                <li><a href="#">貨架狀態</a></li>
-                <li><a href="#">入庫作業</a></li>
-            </ul>
-        </nav>
+        <P style="text-align: center;font-size:30px">自動化倉儲監控</p>
     </header>
 
     <main class="container">
@@ -51,10 +41,10 @@
                     </div>
                     <div class="form-group">
                         <label>存放區域</label>
-                        <select>
-                            <option>A區 - </option>
-                            <option>B區 - </option>
-                            <option>C區 - </option>
+                        <select id="area-select">
+                    <option value="A">A 區 </option>
+                    <option value="B">B 區 </option>
+                    <option value="C">C 區 </option>
                         </select>
                     </div>
                     <button type="submit" class="btn-primary">確認入庫</button>
@@ -62,7 +52,7 @@
             </section>
 
             <section class="visual-section">
-                <h2>貨架即時狀態 (A區)</h2>
+                <P style="text-align: center;font-size:30px">貨架即時狀態</p>
                 <div class="shelf-grid" id="shelf">
                     </div>
             </section>
