@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>自動化倉儲管理系統</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>智慧倉儲監控系統</h1>
+        <nav>
+            <ul>
+                <li><a href="#">首頁</a></li>
+                <li><a href="#">貨架狀態</a></li>
+                <li><a href="#">入庫作業</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="container">
+        <section class="dashboard">
+            <div class="card">
+                <h3>總儲位數</h3>
+                <p id="total-slots">100</p>
+            </div>
+            <div class="card warning">
+                <h3>待出貨數</h3>
+                <p id="pending-orders">12</p>
+            </div>
+            <div class="card success">
+                <h3>剩餘空間</h3>
+                <p id="available-slots">88%</p>
+            </div>
+        </section>
+
+        <div class="content-grid">
+            <section class="form-section">
+                <h2>快速入庫</h2>
+                <form id="storage-form">
+                    <div class="form-group">
+                        <label>貨物編號 (SKU)</label>
+                        <input type="text" placeholder="掃描或輸入編號" required>
+                    </div>
+                    <div class="form-group">
+                        <label>存放區域</label>
+                        <select>
+                            <option>A區 - 常溫</option>
+                            <option>B區 - 冷藏</option>
+                            <option>C區 - 高層架</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn-primary">確認入庫</button>
+                </form>
+            </section>
+
+            <section class="visual-section">
+                <h2>貨架即時狀態 (A區)</h2>
+                <div class="shelf-grid" id="shelf">
+                    </div>
+            </section>
+        </div>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>
