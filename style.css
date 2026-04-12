@@ -11,6 +11,16 @@ body {
     background-color: var(--bg-color);
 }
 
+/* 設定不同區域的背景色 */
+body.area-A { background-color: #146caa; } /* 藍色調 */
+body.area-B { background-color: #0a8f15; } /* 綠色調 */
+body.area-C { background-color: #8b5908; } /* 橘色調 */
+
+/* 當格子被點亮時，根據區域給予不同深色 */
+body.area-A .slot.occupied { background-color: #1976d2; }
+body.area-B .slot.occupied { background-color: #388e3c; }
+body.area-C .slot.occupied { background-color: #f57c00; }
+
 .scanner-container {
     background: #000;
     border-radius: 8px;
