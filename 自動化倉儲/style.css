@@ -1,14 +1,22 @@
 :root {
-    --primary-color: #2c3e50;
+    --primary-color: #f42121;
     --accent-color: #3498db;
-    --success: #27ae60;
-    --bg-color: #f4f7f6;
+    --success: #e50d10;
+    --bg-color: hsl(0, 14%, 97%);
 }
 
 body {
     font-family: 'Segoe UI', Arial, sans-serif;
     margin: 0;
     background-color: var(--bg-color);
+}
+
+.scanner-container {
+    background: #000;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 20px;
+    border: 2px solid var(--primary-color);
 }
 
 .container {
@@ -59,12 +67,14 @@ body {
 
 .slot {
     aspect-ratio: 1 / 1;
-    background: var(--success);
+    background: #07f50b; /* 空位：綠色 */
+    border: 1px solid #bdc3c7;
     border-radius: 2px;
 }
 
 .slot.occupied {
-    background: #e74c3c;
+    background: var(--success); /* 有貨：綠色，代表入庫成功 */
+    /* 或者用你原本的 #e74c3c 紅色代表警告不可再放 */
 }
 
 /* 表單樣式 */
