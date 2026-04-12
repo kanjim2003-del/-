@@ -3,12 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>自動化倉儲管理系統</title>
+    <title>自動化倉儲管理</title>
     <link rel="stylesheet" href="style.css">
+    <script src="https://unpkg.com/html5-qrcode"></script>
 </head>
 <body>
     <header>
-        <h1>智慧倉儲監控系統</h1>
+        <h1>智慧倉儲監控</h1>
         <nav>
             <ul>
                 <li><a href="#">首頁</a></li>
@@ -36,6 +37,10 @@
 
         <div class="content-grid">
             <section class="form-section">
+                <div class="scanner-container">
+                    <div id="reader" style="width: 100%;"></div>
+                    <div id="result"></div>
+                </div>
                 <h2>快速入庫</h2>
                 <form id="storage-form">
                     <div class="form-group">
@@ -45,9 +50,9 @@
                     <div class="form-group">
                         <label>存放區域</label>
                         <select>
-                            <option>A區 - 常溫</option>
-                            <option>B區 - 冷藏</option>
-                            <option>C區 - 高層架</option>
+                            <option>A區 - </option>
+                            <option>B區 - </option>
+                            <option>C區 - </option>
                         </select>
                     </div>
                     <button type="submit" class="btn-primary">確認入庫</button>
