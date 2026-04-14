@@ -123,4 +123,26 @@ document.addEventListener('DOMContentLoaded', () => {
     html5QrcodeScanner.render(onScanSuccess);
 
     generateShelf();
+    
+    // 處理入庫的 API
+app.post('/api/inbound', verifyToken, (req, res) => {
+    // 從 Token 中取出使用者的角色
+    const userRole = req.user.role;
+
+    // 權限檢查邏輯
+    if (userRole === 'Admin' || userRole === 'Operator') {
+        // 執行入庫程序...
+        res.status(200).send("入庫成功");
+    } else {
+        // 權限不足
+        res.status(403).send("錯誤：您沒有權限執行此操作");
+    }
+});
+
+// 假設登入後取得 userRole
+if (userRole !== 'Admin') {
+    // 隱藏某些敏感按鈕
+    document.getElementById('delete-all-btn').style.display = 'none';
+    document.getElementById('admin-panel').innerHTML = "權限不足，無法存取管理面板";
+}
 });
