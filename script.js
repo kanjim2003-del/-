@@ -4,48 +4,54 @@ document.addEventListener('DOMContentLoaded', () => {
     const shelf = document.getElementById('shelf');
     const areaSelect = document.getElementById('area-select');
     
-    // 取得新的兩個欄位與按鈕
-    const materialInput = document.getElementById('material-id'); // 物料欄 (唯讀)
-    const slotInput = document.getElementById('slot-input');     // 儲位欄 (手打)
+    const materialInput = document.getElementById('material-id'); 
+    const slotInput = document.getElementById('slot-input');     
     const storageForm = document.getElementById('storage-form');
 
-    // 2. 獨立系統記憶體 (使用 localStorage 實現本地存檔，重新整理也不會消失)
-    let warehouseSystems = { "A": new Set(), "B": new Set(), "C": new Set() };
+    // 【修改點 1】改為物件結構，以便存放「位置:料號」
+    let warehouseSystems = { "A": {}, "B": {}, "C": {} };
     
     // 讀取舊有存檔
     const savedData = localStorage.getItem('warehouseData');
     if (savedData) {
-        const parsed = JSON.parse(savedData);
-        // 將陣列轉回 Set 結構
-        Object.keys(parsed).forEach(k => warehouseSystems[k] = new Set(parsed[k]));
+        warehouseSystems = JSON.parse(savedData);
     }
 
     // 3. 更新儀表板
     function updateDashboard() {
         const area = areaSelect.value;
-        const occupied = warehouseSystems[area].size;
+        // 【修改點 2】計算物件的 Key 數量
+        const occupied = Object.keys(warehouseSystems[area]).length;
         const available = totalSlots - occupied;
         
         document.getElementById('total-slots').innerText = totalSlots;
         document.getElementById('pending-orders').innerText = occupied;
-        document.getElementById('available-slots').innerText = `${available} (${Math.round(occupied/totalSlots*100)}%)`;
+        document.getElementById('available-slots').innerText = `${available}`;
     }
 
-    // 4. 生成獨立貨架並根據區域變色
+    // 4. 生成獨立貨架
     function generateShelf() {
         const area = areaSelect.value;
         shelf.innerHTML = ''; 
-        document.body.className = `area-${area}`; // 切換背景 Class
+        document.body.className = `area-${area}`; 
 
         for (let i = 1; i <= totalSlots; i++) {
             const slot = document.createElement('div');
             slot.classList.add('slot');
-            slot.setAttribute('data-id', `${area}-${i}`); // ID 格式為 A-1, B-1...
-            slot.innerText = i; 
+            slot.setAttribute('data-id', `${area}-${i}`);
             
-            // 檢查該區域此位置是否已被佔用
-            if (warehouseSystems[area].has(i)) {
+            // 【修改點 3】從資料中抓取該位置的料號
+            const materialCode = warehouseSystems[area][i]; 
+            
+            if (materialCode) {
                 slot.classList.add('occupied');
+                // 將料號顯示在格子裡，編號放上面，料號放下面
+                slot.innerHTML = `
+                    <div style="font-size:8px; opacity:0.7;">${i}</div>
+                    <div style="font-size:10px; font-weight:bold; word-break:break-all;">${materialCode}</div>
+                `;
+            } else {
+                slot.innerText = i; 
             }
             shelf.appendChild(slot);
         }
@@ -56,63 +62,52 @@ document.addEventListener('DOMContentLoaded', () => {
     function processInbound() {
         const area = areaSelect.value;
         const material = materialInput.value;
-        const slotNum = parseInt(slotInput.value);
+        const slotNum = slotInput.value.trim(); // 保持字串格式作為物件 Key
 
-        // 檢查物料是否已掃描
         if (!material) {
             alert("請先掃描物料條碼！");
             return;
         }
 
-        // 檢查位置是否有效
-        if (isNaN(slotNum) || slotNum < 1 || slotNum > totalSlots) {
+        const num = parseInt(slotNum);
+        if (isNaN(num) || num < 1 || num > totalSlots) {
             alert("請輸入正確的儲位數字 (1-120)！");
             return;
         }
 
-        // 檢查該區域位置是否重複
-        if (!warehouseSystems[area].has(slotNum)) {
-            // 存入 Set
-            warehouseSystems[area].add(slotNum);
+        // 【修改點 4】檢查該位置是否已存有料號
+        if (!warehouseSystems[area][slotNum]) {
+            // 存入料號
+            warehouseSystems[area][slotNum] = material;
             
-            // 永久存檔到瀏覽器
-            const exportData = {};
-            Object.keys(warehouseSystems).forEach(k => exportData[k] = Array.from(warehouseSystems[k]));
-            localStorage.setItem('warehouseData', JSON.stringify(exportData));
+            // 存檔
+            localStorage.setItem('warehouseData', JSON.stringify(warehouseSystems));
 
-            // 更新畫面顯示
-            const targetSlot = document.querySelector(`.slot[data-id="${area}-${slotNum}"]`);
-            if (targetSlot) targetSlot.classList.add('occupied');
+            // 【修改點 5】重要：存完後立刻重新生成貨架，料號才會跳出來
+            generateShelf();
             
-            updateDashboard();
             alert(`成功！物料 ${material} 已存放至 ${area}區-${slotNum}號`);
             
-            // 清空欄位供下次使用
             materialInput.value = '';
             slotInput.value = '';
         } else {
-            alert(`警告：${area}區-${slotNum} 已經有東西了！`);
+            alert(`警告：${area}區-${slotNum} 已經有東西了！\n內容物：${warehouseSystems[area][slotNum]}`);
         }
     }
 
-    // 6. 掃描成功處理：只填入物料欄
+    // 6. 掃描成功處理
     function onScanSuccess(decodedText) {
-        console.log("掃描成功內容: " + decodedText);
         materialInput.value = decodedText;
         if (navigator.vibrate) navigator.vibrate(100);
-
-        // 掃描完自動聚焦到儲位輸入框，讓你直接打字
         slotInput.focus();
     }
 
     // 7. 事件監聽
-    // 監聽表單提交 (或是按下確認按鈕)
     storageForm.addEventListener('submit', (e) => {
         e.preventDefault();
         processInbound();
     });
 
-    // 監聽區域選單切換
     areaSelect.addEventListener('change', generateShelf);
 
     // 8. 初始化掃描器
@@ -121,6 +116,5 @@ document.addEventListener('DOMContentLoaded', () => {
     );
     html5QrcodeScanner.render(onScanSuccess);
 
-    // 啟動初始化
     generateShelf();
 });

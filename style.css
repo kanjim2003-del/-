@@ -76,6 +76,19 @@ body.area-C .slot.occupied { background-color: #f57c00; }
 }
 
 .slot {
+    flex-direction: column; /* 讓文字上下排列 */
+    word-break: break-all;  /* 如果料號太長強制換行 */
+    line-height: 1.2;
+    padding: 2px;
+    overflow: hidden;       /* 超出隱藏 */
+}
+
+.slot strong {
+    font-size: 9px;         /* 料號稍微大一點點 */
+    color: #fff;            /* 佔用時文字變白 */
+}
+
+.slot {
     aspect-ratio: 1 / 1;
     background: #07f50b; /* 空位：綠色 */
     border: 1px solid #bdc3c7;
