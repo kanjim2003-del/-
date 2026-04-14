@@ -123,6 +123,43 @@ body.area-C .slot.occupied { background-color: #f57c00; }
     /* 或者用你原本的 #e74c3c 紅色代表警告不可再放 */
 }
 
+/* 讓格子可以承載絕對定位的 x 按鈕 */
+.slot {
+    position: relative;
+    /* 你原本的樣式... */
+}
+
+/* 刪除按鈕 (x) 的樣式 */
+.delete-icon {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background-color: #ff4444;
+    color: white;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    font-size: 14px;
+    font-weight: bold;
+    display: none; /* 預設隱藏 */
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    z-index: 5;
+}
+
+/* 當 body 有 .admin-mode 類別時，顯示 x 按鈕 */
+body.admin-mode .delete-icon {
+    display: flex;
+}
+
+/* 管理模式下，讓有東西的格子微微發光提醒可刪除 */
+body.admin-mode .slot.occupied {
+    outline: 2px solid #ff4444;
+    cursor: pointer;
+}
+
 /* 表單樣式 */
 .form-group {
     margin-bottom: 15px;

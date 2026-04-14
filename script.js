@@ -8,7 +8,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const slotInput = document.getElementById('slot-input');     
     const storageForm = document.getElementById('storage-form');
 
-    // 【修改點 1】改為物件結構，以便存放「位置:料號」
+    // A. 新增管理員狀態變數
+    let isAdminMode = false;
+
+    // 2. 獨立系統記憶體
     let warehouseSystems = { "A": {}, "B": {}, "C": {} };
     
     // 讀取舊有存檔
@@ -17,10 +20,21 @@ document.addEventListener('DOMContentLoaded', () => {
         warehouseSystems = JSON.parse(savedData);
     }
 
+    // B. 綁定「管理模式」按鈕點擊事件
+    const toggleBtn = document.getElementById('toggle-admin');
+    if (toggleBtn) {
+        toggleBtn.addEventListener('click', function() {
+            isAdminMode = !isAdminMode;
+            document.body.classList.toggle('admin-mode'); // 切換 CSS 顯示
+            this.innerText = isAdminMode ? "關閉管理模式" : "開啟管理模式";
+            this.style.backgroundColor = isAdminMode ? "#555" : "#3498db";
+            generateShelf(); // 切換模式時重新渲染，才會出現或隱藏 x 按鈕
+        });
+    }
+
     // 3. 更新儀表板
     function updateDashboard() {
         const area = areaSelect.value;
-        // 【修改點 2】計算物件的 Key 數量
         const occupied = Object.keys(warehouseSystems[area]).length;
         const available = totalSlots - occupied;
         
@@ -29,46 +43,81 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('available-slots').innerText = `${available}`;
     }
 
-    // 4. 生成獨立貨架
+    // 4. 修改後的生成貨架函式 (整合刪除按鈕與點擊邏輯)
     function generateShelf() {
         const area = areaSelect.value;
         shelf.innerHTML = ''; 
-        document.body.className = `area-${area}`; 
+        // 根據區域與模式設定背景
+        document.body.className = `area-${area}${isAdminMode ? ' admin-mode' : ''}`; 
 
         for (let i = 1; i <= totalSlots; i++) {
             const slot = document.createElement('div');
             slot.classList.add('slot');
             slot.setAttribute('data-id', `${area}-${i}`);
             
-            // 【修改點 3】從資料中抓取該位置的料號
             const materialCode = warehouseSystems[area][i]; 
             
             if (materialCode) {
                 slot.classList.add('occupied');
-                // 將料號顯示在格子裡，編號放上面，料號放下面
+                
+                // 插入 HTML，包含刪除按鈕 ×
                 slot.innerHTML = `
                     <strong style="font-size: 10px; word-break: break-all; line-height: 1;">${materialCode}</strong>
-        <span style="font-size: 8px; opacity: 0.8; margin-top: 2px;">${i}</span>
-    `;
-    
-    // 為了確保上下排列，我們可以用 JS 直接給這一格加 flex 樣式（或寫在 CSS 裡）
-    slot.style.display = "flex";
-    slot.style.flexDirection = "column";
-    slot.style.justifyContent = "center";
-    slot.style.alignItems = "center";
+                    <span style="font-size: 8px; opacity: 0.8; margin-top: 2px;">${i}</span>
+                    <div class="delete-icon">×</div>
+                `;
+
+                // 排版樣式
+                slot.style.display = "flex";
+                slot.style.flexDirection = "column";
+                slot.style.justifyContent = "center";
+                slot.style.alignItems = "center";
+
+                // 點擊格子執行刪除 (僅在管理模式下)
+                slot.onclick = () => {
+                    if (isAdminMode) {
+                        executeDelete(area, i, materialCode);
+                    }
+                };
+
+                // 右上角 x 按鈕點擊邏輯
+                const xBtn = slot.querySelector('.delete-icon');
+                xBtn.onclick = (e) => {
+                    e.stopPropagation(); // 停止冒泡，避免點到 x 又點到格子
+                    executeDelete(area, i, materialCode);
+                };
+
             } else {
-                slot.innerText = i; 
+                slot.innerText = i;
+                slot.onclick = null;
+                slot.style.display = "flex"; // 保持空位也是置中排列
             }
             shelf.appendChild(slot);
         }
         updateDashboard();
     }
 
+    // D. 新增刪除執行函式
+    function executeDelete(area, slotNum, code) {
+        const confirmMsg = `【管理員操作】\n確定要清空 ${area}區-${slotNum} 的物料 [${code}] 嗎？`;
+        if (confirm(confirmMsg)) {
+            // 1. 從記憶體中移除
+            delete warehouseSystems[area][slotNum];
+
+            // 2. 更新 LocalStorage
+            localStorage.setItem('warehouseData', JSON.stringify(warehouseSystems));
+
+            // 3. 重新整理貨架與儀表板
+            generateShelf();
+            console.log(`位置 ${area}-${slotNum} 已釋放`);
+        }
+    }
+
     // 5. 兩階段入庫執行邏輯
     function processInbound() {
         const area = areaSelect.value;
         const material = materialInput.value;
-        const slotNum = slotInput.value.trim(); // 保持字串格式作為物件 Key
+        const slotNum = slotInput.value.trim();
 
         if (!material) {
             alert("請先掃描物料條碼！");
@@ -81,15 +130,9 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        // 【修改點 4】檢查該位置是否已存有料號
         if (!warehouseSystems[area][slotNum]) {
-            // 存入料號
             warehouseSystems[area][slotNum] = material;
-            
-            // 存檔
             localStorage.setItem('warehouseData', JSON.stringify(warehouseSystems));
-
-            // 【修改點 5】重要：存完後立刻重新生成貨架，料號才會跳出來
             generateShelf();
             
             alert(`成功！物料 ${material} 已存放至 ${area}區-${slotNum}號`);
@@ -123,26 +166,4 @@ document.addEventListener('DOMContentLoaded', () => {
     html5QrcodeScanner.render(onScanSuccess);
 
     generateShelf();
-    
-    // 處理入庫的 API
-app.post('/api/inbound', verifyToken, (req, res) => {
-    // 從 Token 中取出使用者的角色
-    const userRole = req.user.role;
-
-    // 權限檢查邏輯
-    if (userRole === 'Admin' || userRole === 'Operator') {
-        // 執行入庫程序...
-        res.status(200).send("入庫成功");
-    } else {
-        // 權限不足
-        res.status(403).send("錯誤：您沒有權限執行此操作");
-    }
-});
-
-// 假設登入後取得 userRole
-if (userRole !== 'Admin') {
-    // 隱藏某些敏感按鈕
-    document.getElementById('delete-all-btn').style.display = 'none';
-    document.getElementById('admin-panel').innerHTML = "權限不足，無法存取管理面板";
-}
 });
