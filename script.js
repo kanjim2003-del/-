@@ -47,9 +47,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 slot.classList.add('occupied');
                 // 將料號顯示在格子裡，編號放上面，料號放下面
                 slot.innerHTML = `
-                    <div style="font-size:8px; opacity:0.7;">${i}</div>
-                    <div style="font-size:10px; font-weight:bold; word-break:break-all;">${materialCode}</div>
-                `;
+                    <strong style="font-size: 10px; word-break: break-all; line-height: 1;">${materialCode}</strong>
+        <span style="font-size: 8px; opacity: 0.8; margin-top: 2px;">${i}</span>
+    `;
+    
+    // 為了確保上下排列，我們可以用 JS 直接給這一格加 flex 樣式（或寫在 CSS 裡）
+    slot.style.display = "flex";
+    slot.style.flexDirection = "column";
+    slot.style.justifyContent = "center";
+    slot.style.alignItems = "center";
             } else {
                 slot.innerText = i; 
             }
