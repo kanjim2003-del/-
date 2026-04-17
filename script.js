@@ -98,7 +98,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const slotNum = slotInput.value.trim();
 
         if (!material) { 
-            alert("請先掃描物料條碼！"); 
+            alert("新增物料成功！"); 
             return; 
         }
 
