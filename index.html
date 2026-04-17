@@ -11,22 +11,22 @@
 </head>
 <body>
     <header>
-        <P style="text-align: center;font-size:30px">自動化倉儲監控</p>
+        <p style="text-align: center;font-size:30px">自動化倉儲監控</p>
     </header>
 
     <main class="container">
         <section class="dashboard">
             <div class="card">
                 <h3>總儲位數</h3>
-                <p id="total-slots">100</p>
+                <p id="total-slots">120</p>
             </div>
             <div class="card warning">
                 <h3>已用空間</h3>
-                <p id="pending-orders">12</p>
+                <p id="pending-orders">0</p>
             </div>
             <div class="card success">
                 <h3>剩餘空間</h3>
-                <p id="available-slots">88</p>
+                <p id="available-slots">120</p>
             </div>
         </section>
 
@@ -34,39 +34,41 @@
             <section class="form-section">
                 <div class="scanner-container">
                     <div id="reader" style="width: 100%;"></div>
-                    <div id="result"></div>
                 </div>
-                <h2>掃描入庫</h2>
+                
+                <h2>入庫作業</h2>
                 <form id="storage-form">
                     <div class="form-group">
-                        <label>貨物編號 (SKU)</label>
-                       <form id="storage-form">
-    <input type="text" id="material-id" placeholder="請掃描物料條碼" readonly 
-           style="background-color: #f0f0f0; cursor: not-allowed;">
+                <label>貨物編號 (SKU)</label>
+                <input type="text" id="material-id" placeholder="請掃描物料條碼" readonly 
+           style="background-color: #f8f9fa; cursor: not-allowed;">
+</div>
 
-    <input type="number" id="slot-input" placeholder="手動輸入儲位 (1-120)" min="1" max="120">
-
-    <button type="submit" id="confirm-btn">確認入庫</button>
-</form>
-        <div class="admin-panel" style="margin-bottom: 20px; text-align: right;">
-        <button id="toggle-admin" class="btn-secondary">開啟管理模式</button>
-          </div>
+                    <div class="form-group">
+                        <label>儲位編號 (1-120)</label>
+                        <input type="number" id="slot-input" placeholder="輸入儲位號碼" min="1" max="120">
                     </div>
+
                     <div class="form-group">
                         <label>存放區域</label>
                         <select id="area-select">
-                    <option value="A">A 區 </option>
-                    <option value="B">B 區 </option>
-                    <option value="C">C 區 </option>
+                            <option value="A">A 區</option>
+                            <option value="B">B 區</option>
+                            <option value="C">C 區</option>
                         </select>
                     </div>
+
+                    <button type="submit" id="confirm-btn">確認入庫</button>
                 </form>
+
+                <div class="admin-panel" style="margin-top: 20px; text-align: right;">
+                    <button id="toggle-admin" class="btn-secondary">開啟管理模式</button>
+                </div>
             </section>
 
             <section class="visual-section">
-                <P style="text-align: center;font-size:30px">貨架即時狀態</p>
-                <div class="shelf-grid" id="shelf">
-                    </div>
+                <p style="text-align: center;font-size:30px">貨架即時狀態</p>
+                <div class="shelf-grid" id="shelf"></div>
             </section>
         </div>
     </main>
